@@ -24,16 +24,27 @@ Future<void> transform(String sheetId) async {
   /// and the values are the contents of a single tab of the Google Sheet
   final fileStrings = await downloadSheets(sheetId);
 
-  /// The first task is to create a List of patients from the patient tab
-  final List<Patient>? patientList =
-      fileStrings['patient'] == null ? null : patients(fileStrings['patient']!);
+  /// To hold all of the resources we've created so far
+  final Map<String, String> resourcesAsNdJsonStrings = {};
 
-  if (patientList != null) {
-    final ndJsonString = FhirBulk.toNdJson(patientList);
-    final fileBytes = await FhirBulk.toTarGzFile([ndJsonString]);
-    if (fileBytes != null) {
-      await FileSaver.instance.saveFile(
-          name: 'fhirdata.tar.gz', bytes: Uint8List.fromList(fileBytes));
+  /// The map of the resource files we're going to generate and the functions
+  /// we'll use for each resource
+  final Map<String, Function> resourcesToGenerate = {
+    'patient': patients,
+    'relatedperson': relatedPersons,
+  };
+
+  resourcesToGenerate.forEach((key, value) {
+    final List<Resource>? resourceList =
+        fileStrings[key] == null ? null : value(fileStrings[key]!);
+    if (resourceList != null) {
+      resourcesAsNdJsonStrings[key] = FhirBulk.toNdJson(resourceList);
     }
+  });
+
+  final fileBytes = await FhirBulk.toTarGzFile(resourcesAsNdJsonStrings);
+  if (fileBytes != null) {
+    await FileSaver.instance.saveFile(
+        name: 'fhirdata.tar.gz', bytes: Uint8List.fromList(fileBytes));
   }
 }

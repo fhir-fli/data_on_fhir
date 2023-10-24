@@ -1,6 +1,5 @@
 import 'package:data_on_fhir/utils/utils.dart';
 import 'package:fhir/r4.dart';
-import 'package:fhir/r4/r4.dart';
 
 List<PatientContact>? patientContacts(
   dynamic row, {
