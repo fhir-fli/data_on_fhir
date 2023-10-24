@@ -22,7 +22,10 @@
             "name": "data_on_fhir (release mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "release"
+            "flutterMode": "release",
+            "args": [
+                "-v"
+            ]
         }
     ]
 }

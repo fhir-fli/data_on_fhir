@@ -8,6 +8,7 @@ HumanName? name(
   int? familyNameIndex,
   int? givenNamesIndex,
 }) {
+  print('name');
   if (isNullOrBlank(preferredNameIndex, row) &&
       isNullOrBlank(familyNameIndex, row) &&
       isNullOrBlank(givenNamesIndex, row)) {
@@ -15,7 +16,7 @@ HumanName? name(
   } else if (!isNullOrBlank(preferredNameIndex, row)) {
     return HumanName(
       use: HumanNameUse.usual,
-      given: row[preferredNameIndex],
+      given: row[preferredNameIndex].toString().split(' '),
     );
   } else {
     return HumanName(
@@ -34,6 +35,7 @@ List<HumanName>? names(
   int? familyNameIndex,
   int? givenNamesIndex,
 }) {
+  print('names');
   final List<HumanName> nameList = <HumanName>[];
   if (!isNullOrBlank(preferredNameIndex, row)) {
     nameList.add(

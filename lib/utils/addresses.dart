@@ -31,30 +31,29 @@ Address? address(
   int? stateOrProvinceIndex,
   int? postalOrZipCodeIndex,
   int? countryIndex,
-}) =>
-    (isNullOrBlank(streetAddressIndex, row) &&
-            isNullOrBlank(cityOrTownIndex, row) &&
-            isNullOrBlank(districtOrCountyIndex, row) &&
-            isNullOrBlank(stateOrProvinceIndex, row) &&
-            isNullOrBlank(postalOrZipCodeIndex, row) &&
-            isNullOrBlank(countryIndex, row))
-        ? null
-        : Address(
-            line: isNullOrBlank(streetAddressIndex, row)
-                ? null
-                : <String>[row[streetAddressIndex]],
-            city: isNullOrBlank(cityOrTownIndex, row)
-                ? null
-                : row[cityOrTownIndex],
-            district: isNullOrBlank(districtOrCountyIndex, row)
-                ? null
-                : row[districtOrCountyIndex],
-            state: isNullOrBlank(stateOrProvinceIndex, row)
-                ? null
-                : row[stateOrProvinceIndex],
-            postalCode: isNullOrBlank(postalOrZipCodeIndex, row)
-                ? null
-                : row[postalOrZipCodeIndex].toString(),
-            country:
-                isNullOrBlank(countryIndex, row) ? null : row[countryIndex],
-          );
+}) {
+  return (isNullOrBlank(streetAddressIndex, row) &&
+          isNullOrBlank(cityOrTownIndex, row) &&
+          isNullOrBlank(districtOrCountyIndex, row) &&
+          isNullOrBlank(stateOrProvinceIndex, row) &&
+          isNullOrBlank(postalOrZipCodeIndex, row) &&
+          isNullOrBlank(countryIndex, row))
+      ? null
+      : Address(
+          line: isNullOrBlank(streetAddressIndex, row)
+              ? null
+              : <String>[row[streetAddressIndex]],
+          city:
+              isNullOrBlank(cityOrTownIndex, row) ? null : row[cityOrTownIndex],
+          district: isNullOrBlank(districtOrCountyIndex, row)
+              ? null
+              : row[districtOrCountyIndex],
+          state: isNullOrBlank(stateOrProvinceIndex, row)
+              ? null
+              : row[stateOrProvinceIndex],
+          postalCode: isNullOrBlank(postalOrZipCodeIndex, row)
+              ? null
+              : row[postalOrZipCodeIndex].toString(),
+          country: isNullOrBlank(countryIndex, row) ? null : row[countryIndex],
+        );
+}

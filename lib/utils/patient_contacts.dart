@@ -1,4 +1,5 @@
 import 'package:data_on_fhir/utils/utils.dart';
+import 'package:fhir/r4.dart';
 import 'package:fhir/r4/r4.dart';
 
 List<PatientContact>? patientContacts(
@@ -13,6 +14,7 @@ List<PatientContact>? patientContacts(
   int? contactPostalOrZipCodeIndex,
   int? contactCountryIndex,
 }) {
+  print('patient contacts');
   if (isNullOrBlank(contactFamilyNameIndex, row) &&
       isNullOrBlank(contactGivenNamesIndex, row) &&
       isNullOrBlank(contactPhoneIndex, row) &&
@@ -26,6 +28,18 @@ List<PatientContact>? patientContacts(
   } else {
     return [
       PatientContact(
+        relationship: [
+          CodeableConcept(
+            coding: [
+              Coding(
+                code: FhirCode('C'),
+                system:
+                    FhirUri('http://terminology.hl7.org/CodeSystem/v2-0131'),
+                display: 'Emergency Contact',
+              ),
+            ],
+          ),
+        ],
         name: name(
           row,
           familyNameIndex: contactFamilyNameIndex,

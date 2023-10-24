@@ -1,5 +1,9 @@
+import 'dart:typed_data';
+
 import 'package:data_on_fhir/download_sheets.dart';
 import 'package:fhir/r4.dart';
+import 'package:fhir_bulk/r4.dart';
+import 'package:file_saver/file_saver.dart';
 
 import 'resources/resources.dart';
 
@@ -24,7 +28,12 @@ Future<void> transform(String sheetId) async {
   final List<Patient>? patientList =
       fileStrings['patient'] == null ? null : patients(fileStrings['patient']!);
 
-  patientList?.forEach((element) {
-    print(element.toJson());
-  });
+  if (patientList != null) {
+    final ndJsonString = FhirBulk.toNdJson(patientList);
+    final fileBytes = await FhirBulk.toTarGzFile([ndJsonString]);
+    if (fileBytes != null) {
+      await FileSaver.instance.saveFile(
+          name: 'fhirdata.tar.gz', bytes: Uint8List.fromList(fileBytes));
+    }
+  }
 }

@@ -2,11 +2,11 @@ import 'package:fhir/r4.dart';
 
 import '../utils/utils.dart';
 
-/// This function returns a list of patients that have been created from the
+/// This function returns a list of [Patient]s that have been created from the
 /// data in the spreadsheet rows that are passed
 List<Patient> patients(List<List<dynamic>> rows) {
-  /// Create the list of patients that we'll eventually return
-  final List<Patient> patientList = <Patient>[];
+  /// Create the list that we'll eventually return
+  final List<Patient> resourceList = <Patient>[];
 
   /// As long as the rows are not empty, we look for the indexes of the various
   /// values. This is setup so that as long as we don't change names of the the
@@ -23,6 +23,7 @@ List<Patient> patients(List<List<dynamic>> rows) {
     final phoneUse2Index = rows[0].indexOf('Phone Use 2');
     final emailIndex = rows[0].indexOf('Email');
     final emailUseIndex = rows[0].indexOf('Email Use');
+    final genderAtBirthIndex = rows[0].indexOf('Gender At Birth');
     final birthdateIndex = rows[0].indexOf('Birthdate');
     final streetAddressIndex = rows[0].indexOf('Street Address');
     final cityOrTownIndex = rows[0].indexOf('City or Town');
@@ -55,65 +56,58 @@ List<Patient> patients(List<List<dynamic>> rows) {
     /// We look through each row starting with the second one (index 1), because
     /// the first row (index 0) cotains the headers
     for (var i = 1; i < lastIndex; i++) {
-      patientList.add(
+      print(i);
+      resourceList.add(
         Patient(
-          fhirId: isNullOrBlank(idIndex, rows[i]) ? null : rows[i][idIndex],
-          name: names(
-            rows[i],
-            preferredNameIndex: preferredNameIndex,
-            familyNameIndex: familyNameIndex,
-            givenNamesIndex: givenNamesIndex,
-          ),
-          telecom: contactPoints(
-            rows[i],
-            phone1Index: phone1Index,
-            phoneUse1Index: phoneUse1Index,
-            phone2Index: phone2Index,
-            phoneUse2Index: phoneUse2Index,
-            emailIndex: emailIndex,
-            emailUseIndex: emailUseIndex,
-          ),
-          birthDate: isNullOrBlank(birthdateIndex, rows[i])
-              ? null
-              : fhirDateFromSpreadsheet(rows[i][birthdateIndex]),
-          address: addressList(
-            rows[i],
-            streetAddressIndex: streetAddressIndex,
-            cityOrTownIndex: cityOrTownIndex,
-            districtOrCountyIndex: districtOrCountyIndex,
-            stateOrProvinceIndex: stateOrProvinceIndex,
-            postalOrZipCodeIndex: postalOrZipCodeIndex,
-            countryIndex: countryIndex,
-          ),
-          contact: patientContacts(
-            rows[i],
-            contactFamilyNameIndex: contactFamilyNameIndex,
-            contactGivenNamesIndex: contactGivenNamesIndex,
-            contactPhoneIndex: contactPhoneIndex,
-            contactStreetAddressIndex: contactStreetAddressIndex,
-            contactCityOrTownIndex: contactCityOrTownIndex,
-            contactDistrictOrCountyIndex: contactDistrictOrCountyIndex,
-            contactStateOrProvinceIndex: contactStateOrProvinceIndex,
-            contactPostalOrZipCodeIndex: contactPostalOrZipCodeIndex,
-            contactCountryIndex: contactCountryIndex,
-          ),
-          communication: isNullOrBlank(preferredLanguageIndex, rows[i])
-              ? null
-              : [
-                  PatientCommunication(
-                    language: CodeableConcept(
-                      coding: [
-                        Coding(
-                          system: FhirUri('urn:ietf:bcp:47'),
-                          code: FhirCode(rows[i][preferredLanguageIndex]),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-        ),
+            fhirId: isNullOrBlank(idIndex, rows[i])
+                ? null
+                : rows[i][idIndex].toString(),
+            name: names(
+              rows[i],
+              preferredNameIndex: preferredNameIndex,
+              familyNameIndex: familyNameIndex,
+              givenNamesIndex: givenNamesIndex,
+            ),
+            telecom: contactPoints(
+              rows[i],
+              phone1Index: phone1Index,
+              phoneUse1Index: phoneUse1Index,
+              phone2Index: phone2Index,
+              phoneUse2Index: phoneUse2Index,
+              emailIndex: emailIndex,
+              emailUseIndex: emailUseIndex,
+            ),
+            gender: isNullOrBlank(genderAtBirthIndex, rows[i])
+                ? null
+                : rows[i][genderAtBirthIndex],
+            birthDate: isNullOrBlank(birthdateIndex, rows[i])
+                ? null
+                : fhirDateFromSpreadsheet(rows[i][birthdateIndex]),
+            address: addressList(
+              rows[i],
+              streetAddressIndex: streetAddressIndex,
+              cityOrTownIndex: cityOrTownIndex,
+              districtOrCountyIndex: districtOrCountyIndex,
+              stateOrProvinceIndex: stateOrProvinceIndex,
+              postalOrZipCodeIndex: postalOrZipCodeIndex,
+              countryIndex: countryIndex,
+            ),
+            contact: patientContacts(
+              rows[i],
+              contactFamilyNameIndex: contactFamilyNameIndex,
+              contactGivenNamesIndex: contactGivenNamesIndex,
+              contactPhoneIndex: contactPhoneIndex,
+              contactStreetAddressIndex: contactStreetAddressIndex,
+              contactCityOrTownIndex: contactCityOrTownIndex,
+              contactDistrictOrCountyIndex: contactDistrictOrCountyIndex,
+              contactStateOrProvinceIndex: contactStateOrProvinceIndex,
+              contactPostalOrZipCodeIndex: contactPostalOrZipCodeIndex,
+              contactCountryIndex: contactCountryIndex,
+            ),
+            communication: communication<PatientCommunication>(
+                preferredLanguageIndex, rows[i])),
       );
     }
   }
-  return patientList;
+  return resourceList;
 }

@@ -11,6 +11,7 @@ List<ContactPoint>? contactPoints(
   int? emailIndex,
   int? emailUseIndex,
 }) {
+  print('contact points');
   final List<ContactPoint> contactPointList = <ContactPoint>[];
   if (!isNullOrBlank(phone1Index, row)) {
     contactPointList.add(
