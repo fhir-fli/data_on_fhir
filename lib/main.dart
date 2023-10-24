@@ -2,10 +2,23 @@ import 'package:data_on_fhir/transform.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-void main() => runApp(const MyApp());
+void main() => runApp(MyApp());
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends StatefulWidget {
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  String error = '';
+  bool showError = false;
+
+  void updateError(Object e, StackTrace s) {
+    setState(() {
+      error = 'Error: $e\nStackTrace:\n$s';
+      showError = true;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +108,7 @@ class MyApp extends StatelessWidget {
                 SizedBox(
                   width: 700,
                   child: const Text(
-                    'Now, you need to share your spreadsheet with this app. To do this, copy the full url of your spreadsheet, and paste it in the text box below. Then click the "Set my Data on FHIR! button',
+                    'Now, you need to share your spreadsheet with this app. To do this, copy the full url of your spreadsheet, and paste it in the text box below. When you click the "Set my Data on FHIR! button, the application will transform all of your data and download it in the default folder of your computer as a .tar.gz file.',
                     style: TextStyle(fontSize: 18),
                   ),
                 ),
@@ -114,7 +127,13 @@ class MyApp extends StatelessWidget {
                   width: 300,
                   height: 100,
                   child: ElevatedButton(
-                    onPressed: () => transform(_controller.text),
+                    onPressed: () {
+                      try {
+                        transform(_controller.text);
+                      } catch (e, s) {
+                        updateError(e, s);
+                      }
+                    },
                     style: ButtonStyle(
                       shape: MaterialStatePropertyAll(
                         RoundedRectangleBorder(
@@ -145,6 +164,91 @@ class MyApp extends StatelessWidget {
                     ),
                   ),
                 ),
+                SizedBox(
+                  width: 700,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'If you run into any trouble, please feel free to email me at:    ',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      Text(
+                        'grey@fhirfli.dev',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.blue,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.copy),
+                        onPressed: () {
+                          Clipboard.setData(
+                            ClipboardData(text: 'grey@fhirfli.dev'),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  width: 700,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'You are also welcome to join our   ',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      Text(
+                        'slack channel',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.blue,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.copy),
+                        onPressed: () {
+                          Clipboard.setData(
+                            ClipboardData(
+                                text:
+                                    'https://join.slack.com/t/fhir-fli/shared_invite/zt-25qp5igsk-9_e6ACfobI1fGQjTQX2r7g'),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                if (showError)
+                  SizedBox(
+                    width: 700,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'If you are seeing this, there has unfortunately been an error. Please copy the error below, and email it to me and I\'ll fix it as soon as I have a chance.',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        Text(
+                          'copy error',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.blue,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.copy),
+                          onPressed: () {
+                            Clipboard.setData(ClipboardData(text: error));
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
               ],
             ),
           ),
